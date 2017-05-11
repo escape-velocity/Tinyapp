@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-      <%- include partials/_header.ejs %>
-    </head>
+    <header>
+    <% include partials/_header.ejs %>
+    </header>
   <body>
 
-    <h2>ShortURL:  <%= shortURL %></h2>
+    <h3><%= shortURL + " : " + longURL %></h3>
 
     <form action="" method="post">
       <label for="POST-name">Update URL:</label>

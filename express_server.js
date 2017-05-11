@@ -58,9 +58,6 @@ app.post("/login", (req, res) => {
   console.log(res.cookie("username"));
 });
 
-
-
-
 app.post("/urls/:id", (req, res) => {
   const shortID = req.params.id;
   const longURL = req.body.shortID;

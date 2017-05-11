@@ -3,14 +3,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>TinyApp</title>
+  <title>Tinyapp</title>
 
       <form action="/login" method="post">
-      <label for="POST-login">Put your name here Please >>>  </label>
+      <label for="POST-login">Put your name here</label>
       <input id="/login" type="text" name="username">
-      <input type="submit" value="PUSH *">
+      <input type="submit" value="Enter">
       </form>
-        <% if(username){ %> <%= username %>
+        <% if(username){ %>Hello <%= username %>
       <form action = "/logout" method = "post">
       <input type = "submit" value = "LogOut">
       <% } %>
