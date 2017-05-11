@@ -5,8 +5,16 @@
       <%- include partials/_header.ejs %>
     </head>
   <body>
-    <%= longURL %>
-    <%= shortURL %>
+
+    <h2>ShortURL:  <%= shortURL %></h2>
+
+    <form action="" method="post">
+      <label for="POST-name">Update URL:</label>
+      <input id="POST-name" type="text" name="shortID">
+      <input type="submit" value="input">
+    </form>
+
+  </form>
   </body>
 </html>
 
