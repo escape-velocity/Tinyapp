@@ -1,19 +1,19 @@
 
-// var bodyParser = require("body-parser");
+var bodyParser = require("body-parser");
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 
 //configuration
 app.set("view engine", "ejs");
-// app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-//REVIEW funtction logic below!!
+//REVIEW function logic below!!
 function generateRandomString() {
   let text = "";
   let charset = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUWXYZ";
@@ -33,10 +33,37 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.post("/urls", (req, res) => {
+  var shortURL = generateRandomString()
+  urlDatabase[shortURL]=req.body.longURL;
+  res.redirect('urls/' + shortURL);
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+const id = req.params.id;
+  delete urlDatabase[id]
+  res.redirect('/urls');
+})
+
+app.post("/urls/:id", (req, res) => {
+  const shortID = req.params.id;
+  const longURL = req.body.shortID;
+  urlDatabase[shortID] = longURL;
+  res.redirect('/urls');
+})
+
+
+// app.post("/urls/:id/update", (req, res) => {
+//   const shortID = req.params.id;
+//   const longURL = req.body.shortID;
+//   urlDatabase[shortID] = longURL;
+//   res.redirect('/urls');
+// })
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
