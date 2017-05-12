@@ -1,18 +1,8 @@
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Tinyapp</title>
-
-      <form action="/login" method="post">
-      <label for="POST-login">Put your name here</label>
-      <input id="/login" type="text" name="username">
-      <input type="submit" value="Enter">
-      </form>
-        <% if(username){ %>Hello <%= username %>
-      <form action = "/logout" method = "post">
-      <input type = "submit" value = "LogOut">
-      <% } %>
-
-</head>
+<header>
+  <% if(user) { %>
+  <p>Hello <%= user.email %></p>
+  <button><a href="/urls">Logout</a></button>
+  <% } else { %>
+  <button><a href="/register">Login</a></button>
+  <% } %>
+</header>

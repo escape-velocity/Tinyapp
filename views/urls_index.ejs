@@ -1,11 +1,10 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <%- include partials/_header.ejs %>
+  <title>Tinyapp</title>
 </head>
 <body>
+  <% include partials/_header.ejs %>
   <ul>
   <% for(var key in urls) { %>
     <li><%= key + ': ' + urls[key] %>
