@@ -1,8 +1,21 @@
 <header>
-  <% if(user) { %>
-  <p>Hello <%= user.email %></p>
-  <button><a href="/urls">Logout</a></button>
-  <% } else { %>
+  <!-- <% if(user) { %> -->
+  <p>Welcome <%= user.email %></p>
+  <button><!-- <% if(user){ %>Hello <%= user.email %> -->
+<form action = "/logout" method = "post">
+<input type = "submit" value = "LogOut">
+<!-- <% } %> --></button>
+  <!-- <% } else { %> -->
   <button><a href="/register">Login</a></button>
-  <% } %>
+ <!--  <% } %> -->
 </header>
+
+<!-- <form action="/login" method="post">
+<label for="POST-login">Put your name here</label>
+<input id="/login" type="text" name="username">
+<input type="submit" value="Enter">
+</form>
+  <% if(user){ %>Hello <%= user.email %>
+<form action = "/logout" method = "post">
+<input type = "submit" value = "LogOut">
+<% } %> -->
