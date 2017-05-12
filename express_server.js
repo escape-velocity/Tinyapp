@@ -10,6 +10,14 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+const users = {
+  "j9eN2d": {
+    id: "j9eN2d",
+    email: "test@user.com",
+    password: "123456"
+  }
+}
+
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -26,7 +34,8 @@ function generateRandomString() {
 }
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  console.log(req.cookies.userid);
+  let templateVars = { urls: urlDatabase, user: users[req.cookies.userid] };
   res.render("urls_index", templateVars);
 });
 
@@ -55,7 +64,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   res.redirect("/urls");
-  console.log(res.cookie("username"));
+  //console.log(res.cookie("username"));
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -71,13 +80,34 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("userid");
   res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+app.get("/register", (req, res) => {
+  let templateVars = {urls: urlDatabase}
+
+  res.render("register", templateVars)
+});
+app.post("/register",(req, res) =>{
+  var user_id = generateRandomString();
+
+  users[user_id] = {
+    id: user_id,
+    email: req.body.email,
+    password: req.body.password
+  }
+
+  res.cookie("userid", user_id);
+  res.redirect("/urls");
+})
+
+app.get("/debug", (req, res) => {
+  res.json(users);
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
