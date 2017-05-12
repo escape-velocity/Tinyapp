@@ -50,7 +50,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"] };
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], user: users[req.cookies.userid] };
   console.log("this is the value of long url", urlDatabase[req.params.id]);
   res.render("urls_show", templateVars);
 });
