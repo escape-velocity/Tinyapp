@@ -15,12 +15,23 @@ const users = {
     id: "j9eN2d",
     email: "test@user.com",
     password: "123456"
+  },
+  "abc123": {
+    id: "abc123",
+    email: "test2@user.com",
+    password: "123456"
   }
-}
 
+}
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    userid: "j9eN2d",
+    longURL: "http://www.lighthouselabs.ca"
+  },
+  "9sm5xK": {
+    userid: "abc123",
+    longURL: "http://www.google.com"
+  }
 };
 
 function generateRandomString() {
@@ -34,18 +45,27 @@ function generateRandomString() {
 }
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies.userid);
   let templateVars = { urls: urlDatabase, user: users[req.cookies.userid] };
   res.render("urls_index", templateVars);
 });
 
+
 app.get("/urls/new", (req, res) => {
+  // Work in progress
+  // if (!res.locals.user) {
+  //   res.status(301).redirect ('/login');
+  //   return;
+  // }
+  // res.render('urls_new', {user: res.locals.user.email});
   res.render("urls_new");
 });
 
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userid: req.cookies.userid
+  };
   res.redirect('urls' + shortURL);
 });
 
@@ -62,7 +82,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // });
 
 app.get("/login", (req, res) => {
-  let templateVars = {urls: urlDatabase, user: users[req.cookies.userid], }
+  let templateVars = { user: users[req.cookies.userid] }
   res.render("login", templateVars)
 });
 
@@ -106,15 +126,15 @@ app.post("/login", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], user: users[req.cookies.userid] };
-  console.log("this is the value of long url", urlDatabase[req.params.id]);
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.cookies.userid] };
+  // console.log("this is the value of long url", urlDatabase[req.params.id]);
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
   const shortID = req.params.id;
-  const longURL = req.body.shortID;
-  urlDatabase[shortID] = longURL;
+  const longURL = req.body.longURL;
+  urlDatabase[shortID].longURL = longURL;
   res.redirect('/urls');
 });
 
@@ -155,9 +175,7 @@ app.post("/register",(req, res) =>{
     }
 
  }
-
-
-  users[user_id] = {
+    users[user_id] = {
     id: user_id,
     email: req.body.email,
     password: req.body.password
