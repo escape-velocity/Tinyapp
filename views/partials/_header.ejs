@@ -1,5 +1,5 @@
 <header>
-  <% if(user) { %>
+  <% if(locals.user) { %>
   <p>Welcome <%= user.email %></p>
   <button>
 <form action = "/logout" method = "post">
@@ -10,5 +10,6 @@
   <button><a href="/login">Login</a></button>
   <% } %>
   <button><a href="/register">Register</a></button>
+  <button><a href="/urls/new">New</a></button>
 </header>
 
