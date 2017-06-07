@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Tinyapp</title>
+  <title>TinyApp</title>
 </head>
 <body>
-  <% include partials/_header.ejs %>
-  <ul>
-  <% for(var key in urls) { %>
-    <li><%= key + ': ' + urls[key] %>
-    <form action="urls/<%= key %>/delete"
-    method="post">
-        <a href="urls/<%= key %>">Edit</a>
+  <%- include partials/_header.ejs %>
+    <ul>
+    <% for(var key in urls) { %>
+      <li><%= key + ': ' + urls[key] %>
+      <form action = "/urls/<%= key %>/delete"
+      method="post">
+        <a href = "/urls/<%= key %>">Edit</a>
         <button type="submit"> Delete</button>
         </form>
-    </li>
-    <% } %>
-  </ul>
-
+      </li>
+      <% } %>
+    </ul>
 </body>
 </html>
-
