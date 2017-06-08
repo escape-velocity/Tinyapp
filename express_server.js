@@ -94,9 +94,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/new", (req, res)=>{
-  //let templateVars = { urls: urlDatabase };
-  res.render("urls_new");
+app.get("/urls/new", (req, res) => {
+  let user_ID = req.session["user_id"];
+  if (users[user_ID]) {
+    res.render("urls_new");
+  } else {
+    res.status(401);
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
