@@ -13,17 +13,17 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   "user3RandomID": {
     id: "user3RandomID",
     email: "user3@example.com",
-    password: "disposable!code!!"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   }
 };
 
@@ -83,7 +83,7 @@ app.post("/register", (req, res) =>{
   users[user_id] = {
     id: user_id,
     email: req.body.email,
-    password: req.body.password
+    password: hashed_password
   };
   req.session.userid = user_id;
   res.redirect("/urls");
@@ -128,7 +128,7 @@ app.post("/login", (req, res) => {
   for (let user in users) {
     if (users[user].email === req.body.email) {
       if (bcrypt.compareSync(req.body.password, users[user].password)) {
-        req.session["user_id"] = users[user].id;
+        req.session["userid"] = users[user].id;
         res.redirect("/urls");
         return;
       } else {
