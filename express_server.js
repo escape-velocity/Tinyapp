@@ -1,3 +1,4 @@
+
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -57,8 +58,6 @@ function generateRandomString() {
 app.set("view engine", "ejs");
 
 
-//create routes
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -90,7 +89,6 @@ app.post("/register", (req, res) =>{
   res.redirect("/urls");
 });
 
-
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -100,7 +98,6 @@ app.get("/urls/new", (req, res)=>{
   //let templateVars = { urls: urlDatabase };
   res.render("urls_new");
 });
-
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id]};
@@ -120,7 +117,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   if (!req.body.email || !req.body.password) {
-    res.status(400).send("Email or password left blank.  Please <a href='/login'>try again</a>.");
+    res.status(400).send("Opps, Email or password left blank.  Please <a href='/login'>try again</a>.");
     return;
   }
   for (let user in users) {
@@ -130,12 +127,12 @@ app.post("/login", (req, res) => {
         res.redirect("/urls");
         return;
       } else {
-        res.status(403).send("Incorrect password.  Please <a href='/login'>try again</a>.");
+        res.status(403).send("Sorry that's the Incorrect password.  Please <a href='/login'>try again</a>.");
         return;
       }
     }
   }
-  res.status(403).send("Email does not exist!  Please <a href='/register'>register</a>.");
+  res.status(403).send("Sorry, Email does not exist!  Please <a href='/register'>register</a>.");
 });
 
 app.post("/urls", (req, res) => {
