@@ -24,6 +24,11 @@ const users = {
     id: "user3RandomID",
     email: "user3@example.com",
     password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
+  },
+  "abcdef": {
+    id: "abcdef",
+    email: "lighthouse@lighthouse.com",
+    password: bcrypt.hashSync("lighthouse", 10)
   }
 };
 
@@ -35,16 +40,33 @@ app.use(cookieSession({
 }));
 
 app.use( (req, res, next) => {
-  req.user = users[req.session.userid];
+  req.user = users[req.session.userId];
   res.locals.user = req.user;
+
   next();
+
+  // if (req.path.indexOf('/urls') > -1 && req.user) {
+  //   next();
+  // } else {
+  //   req.redirect('login');
+  // }
+
 });
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+const urlDatabase = {
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID"
+  },
+  "9sm5Ad": {
+    longURL: "http://www.lighthouse.com",
+    userID: "abcdef"
+  }
 };
-
 
 function generateRandomString() {
   let text = "";
@@ -55,8 +77,23 @@ function generateRandomString() {
   return text;
 }
 
-app.set("view engine", "ejs");
+function userSpecificUrls(userID) {
+  let result = {};
 
+  for (let key in urlDatabase) {
+
+    let url = urlDatabase[key];
+
+    if (userID === url.userID) {
+      result[key] = url;
+    }
+
+  }
+
+  return result;
+}
+
+app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -85,18 +122,24 @@ app.post("/register", (req, res) =>{
     email: req.body.email,
     password: hashed_password
   };
-  req.session.userid = user_id;
+  req.session.userId = user_id;
   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+  if (req.user) {
+    let userId = req.user.id;
+    let templateVars = { urls: userSpecificUrls(userId) };
+    res.render("urls_index", templateVars);
+  } else {
+    res.status(401);
+    res.redirect('/login');
+  }
 });
 
 app.get("/urls/new", (req, res) => {
-  let user_ID = req.session["user_id"];
-  if (users[user_ID]) {
+  if (req.user) {
+    let userId = req.user.id;
     res.render("urls_new");
   } else {
     res.status(401);
@@ -104,11 +147,19 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id]};
-  res.render("urls_show", templateVars);
-});
 
+app.get("/urls/:id", (req, res) => {
+  if (req.user) {
+    let userId = req.user.id;
+    let url = urlDatabase[req.params.id];
+    console.log('SHOW', urlDatabase[req.params.id]);
+    url.shortURL = req.params.id;
+    res.render("urls_show", {url: url});
+  } else {
+    res.status(401);
+    res.redirect("/login");
+  }
+});
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
@@ -116,7 +167,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  let templateVars = { user: users[req.session.userid] };
+  let templateVars = { user: req.user };
   res.render("login", templateVars);
 });
 
@@ -128,7 +179,7 @@ app.post("/login", (req, res) => {
   for (let user in users) {
     if (users[user].email === req.body.email) {
       if (bcrypt.compareSync(req.body.password, users[user].password)) {
-        req.session["userid"] = users[user].id;
+        req.session["userId"] = users[user].id;
         res.redirect("/urls");
         return;
       } else {
@@ -141,13 +192,23 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+
   let randomId = generateRandomString();
-  urlDatabase[randomId] = "http://" + req.body.longURL;
+
+  let data = {
+    longURL: "http://" + req.body.longURL,
+    userID: req.user.id
+  };
+
+  urlDatabase[randomId] = data;
   res.redirect('/urls');
 });
 
 app.post("/urls/:id/update", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id] = {
+    longURL: req.body.longURL,
+    userID: req.user.id
+  };
   res.redirect('/urls');
 });
 

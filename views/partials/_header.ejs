@@ -1,17 +1,23 @@
-
 <header>
   <h2>TinyApp</h2>
   <% if(user) { %>
-  <p>Welcome <%= user.email %></p>
 
-<form action = "/logout" method = "post">
-<button>Logout</button>
-<!-- <input type = "submit" value = "LogOut"> -->
-</form>
+    <p>Welcome <%= user.email %></p>
+
+    <form action="/logout" method = "post">
+      <button>Logout</button>
+    <!-- <input type = "submit" value = "LogOut"> -->
+    </form>
+
+    <a href="/urls/new">
+      <button>New Url</button>
+    </a>
+
   <% } else { %>
-  <button><a href="/login">Login</a></button>
+
+    <button><a href="/login">Login</a></button>
     <button><a href="/register">Register</a></button>
 
-  <% } %>
+  <% }  %>
 </header>
 

@@ -5,8 +5,8 @@
 </head>
 <body>
   <%- include partials/_header.ejs %>
-  <h3><%= shortURL + " : " + longURL %></h3>
-  <form action="/urls/<%= shortURL %>/update" method="post">
+  <h3><%= url.shortURL + " : " + url.longURL %></h3>
+  <form action="/urls/<%= url.shortURL %>/update" method="post">
       <label for="POST-name">Update URL:</label>
       <input id="POST-name" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="input" >
