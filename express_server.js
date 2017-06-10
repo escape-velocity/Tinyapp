@@ -46,14 +46,6 @@ app.use( (req, res, next) => {
 
   next();
 
-  // !(A && B) === !A || !B
-
-  // if (req.path.indexOf('/urls') > -1 && req.user) {
-  //   next();
-  // } else {
-  //   req.redirect('login');
-  // }
-
 });
 
 const urlDatabase = {
