@@ -45,6 +45,8 @@ app.use( (req, res, next) => {
 
   next();
 
+  // !(A && B) === !A || !B
+
   // if (req.path.indexOf('/urls') > -1 && req.user) {
   //   next();
   // } else {
@@ -81,13 +83,11 @@ function userSpecificUrls(userID) {
   let result = {};
 
   for (let key in urlDatabase) {
-
     let url = urlDatabase[key];
 
     if (userID === url.userID) {
       result[key] = url;
     }
-
   }
 
   return result;
@@ -96,7 +96,12 @@ function userSpecificUrls(userID) {
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  let user_id = req.user;
+  if(!user_id) {
+   res.redirect('/login');
+ } else {
+   res.redirect('/urls');
+ }
 });
 
 app.get("/register", (req, res) => {
@@ -107,14 +112,16 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) =>{
   var user_id = generateRandomString();
   const hashed_password = bcrypt.hashSync(req.body.password, 10);
+  if(!req.body.email || !req.body.password) {
+    res.status(400);
+    res.send('Email or Password can not be empty.');
+    return;
+  }
   for (user in users) {
     if(users[user].email === req.body.email){
       res.status(403);
       res.send('Email or Password exists.');
-    }
-    if(!req.body.email || !req.body.password) {
-      res.status(400);
-      res.send('Email or Password can not be empty.');
+      return;
     }
   }
   users[user_id] = {
@@ -132,8 +139,8 @@ app.get("/urls", (req, res) => {
     let templateVars = { urls: userSpecificUrls(userId) };
     res.render("urls_index", templateVars);
   } else {
-    res.status(401);
-    res.redirect('/login');
+    res.status(401).send(`You should login <a href="/login">Login</a>
+      or register <a href="/register">Register</a> to access this site`);
   }
 });
 
@@ -149,21 +156,35 @@ app.get("/urls/new", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  if (req.user) {
+
+
+  if (!req.user) {
+    res.status(401).send(`You should login <a href="/login">Login</a>
+    or register <a href="/register">Register</a> to access this site`);
+  }
+  if(req.params.id in urlDatabase) {
     let userId = req.user.id;
     let url = urlDatabase[req.params.id];
-    console.log('SHOW', urlDatabase[req.params.id]);
     url.shortURL = req.params.id;
+
     res.render("urls_show", {url: url});
   } else {
-    res.status(401);
-    res.redirect("/login");
+    res.status(401).send(`You should use a correct shortURL <a href="/login">Login</a>
+    or register <a href="/register">Register</a> to access this site`);
   }
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  if (req.params.shortURL in urlDatabase) {
+    let longURL = urlDatabase[req.params.shortURL].longURL;
+    let URL = "http://" + longURL;
+    res.redirect(longURL);
+    return ;
+  } else {
+    res.status(400).send(`You shoud put right shortURL<br>Go to
+    <a href="/urls">login</a> in page<br>or go to <a href="/register">
+    Register</a> page`);
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -205,6 +226,13 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/update", (req, res) => {
+  let user_id = req.user;
+  if(!user_id) {
+   res.redirect('/login');
+ } else {
+  delete urlDatabase[shortURL];
+   res.redirect('/urls');
+  }
   urlDatabase[req.params.id] = {
     longURL: req.body.longURL,
     userID: req.user.id
