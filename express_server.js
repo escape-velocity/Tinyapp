@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.set("view engine", "ejs");
 
 const users = {
   "userRandomID": {
@@ -93,7 +94,6 @@ function userSpecificUrls(userID) {
   return result;
 }
 
-app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
   let user_id = req.user;
@@ -226,13 +226,6 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/update", (req, res) => {
-  let user_id = req.user;
-  if(!user_id) {
-   res.redirect('/login');
- } else {
-  delete urlDatabase[shortURL];
-   res.redirect('/urls');
-  }
   urlDatabase[req.params.id] = {
     longURL: req.body.longURL,
     userID: req.user.id
@@ -241,8 +234,15 @@ app.post("/urls/:id/update", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  let user_id = req.user;
+  if(!user_id) {
+    req.session = null;;
+   res.redirect('/login');
+ } else {
   delete urlDatabase[req.params.id];
-  res.redirect('/urls');
+   res.redirect('/urls');
+  }
+
 });
 
 app.post("/logout", (req, res) => {
